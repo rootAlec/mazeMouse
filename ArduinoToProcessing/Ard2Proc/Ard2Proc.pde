@@ -1,7 +1,7 @@
 import processing.serial.*;
 
 Serial myPort;  // Create object from Serial class
-String val = "Successed";     // Data received from the serial port
+String val = "";     // Data received from the serial port
 
 void setup()
 {
@@ -15,9 +15,9 @@ void setup()
 
 void draw()
 {
-  if ( myPort.available() > 0) 
+  if (myPort.available() > 0) 
   {  // If data is available,
-  val = myPort.readStringUntil('\n');         // read it and store it in val
+      val = myPort.readStringUntil('\n');         // read it and store it in val
   } 
-println(val); //print it out in the console
+  println(val); //print it out in the console
 }
