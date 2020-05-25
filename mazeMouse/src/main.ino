@@ -9,7 +9,7 @@ void setup() {
   Serial.begin(9600);
 }
 
-String chooseRoute(char l, int r)
+String chooseRoute(char l, char r)
 {
   String s1 = "Turn Left";
   String s2 = "Turn Right";
