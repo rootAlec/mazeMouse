@@ -1,3 +1,4 @@
+#include <Arduino.h>
 const int trackPin_1000 = A5;
 const int trackPin_0100 = A4;
 const int trackPin_0010 = A3;
