@@ -212,7 +212,7 @@ void loop() {
   String route_type;
   route_type = chooseRoute(lineState[0], lineState[3]);
   Serial.println(route_type);
-  //motorRun(route_type);
+  motorRun(route_type);
   delay(100);
   
 }
