@@ -11,6 +11,15 @@ char lineState[5];
 // Motor setup
 
 
+
+
+// Struct setup
+struct Position
+{
+    int x;
+    int y;
+};
+
 // Make motor run
 void motorRun(String type)
 {
@@ -32,18 +41,8 @@ void motorRun(String type)
     }
 }
 
-// Struct setup
-struct Position
-{
-    int x;
-    int y;
-};
-
 // for Depth_First_Search
-int map[10][10];
-int start_X, start_Y;
-int end_X, end_Y;
-Position nowLocation;
+
 
 // for Stack
 Position Stack[100];
@@ -78,6 +77,10 @@ Position top()
 // Depth_First_Search Algorithm (DFS)
 void Depth_First_Search()
 {
+    int map[100][100];
+    int start_X, start_Y;
+    int end_X, end_Y;
+    Position nowLocation;
 
     start_X = Serial.read();
     start_Y = Serial.read();
@@ -152,11 +155,11 @@ void showPath()
     {
         while(!isEmpty())
         {
-            nowLocation = top();
+            Position ans = top();
             Serial.print("( ");
-            Serial.print(nowLocation.x);
+            Serial.print(ans.x);
             Serial.print(", ");
-            Serial.print(nowLocation.y);
+            Serial.print(ans.y);
             Serial.print(" )");
             pop();
         }
@@ -209,7 +212,7 @@ void loop() {
   String route_type;
   route_type = chooseRoute(lineState[0], lineState[3]);
   Serial.println(route_type);
-  motorRun(route_type);
+  //motorRun(route_type);
   delay(100);
   
 }
