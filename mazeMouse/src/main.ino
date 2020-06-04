@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Servo.h>
+#include <AFMotor.h>
 
 // Sensor setup
 const int trackPin_1000 = A5;
@@ -9,9 +10,8 @@ const int trackPin_0001 = A2;
 char lineState[5];
 
 // Motor setup
-
-
-
+AF_DCMotor motor1(1);
+AF_DCMotor motor4(4);
 
 // Struct setup
 struct Position
