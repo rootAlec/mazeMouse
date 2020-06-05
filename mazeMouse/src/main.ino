@@ -21,27 +21,57 @@ struct Position
 };
 
 // Make motor run
+void Straight_Line()
+{
+    motor1.setSpeed(200);
+    motor4.setSpeed(200);
+}
+
+void turn_Left()
+{
+    motor1.setSpeed(200);
+    motor4.setSpeed(400);
+}
+
+void turn_Right()
+{
+    motor1.setSpeed(400);
+    motor4.setSpeed(200);
+}
+
+void reverse()
+{
+    motor1.setSpeed(-200);
+    motor4.setSpeed(-200);
+}
+
+void stopTheCar()
+{
+    motor1.setSpeed(RELEASE);
+    motor4.setSpeed(RELEASE);
+}
+
 void motorRun(String type)
 {
-    if(type == "Left")
+    if(type == "Straight_Line")
     {
-        /**/
+        Straight_Line();
+    }
+    else if(type == "Left")
+    {
+        turn_Left();
     }
     else if(type == "Right")
     {
-        /**/
+        turn_Right();
     }
     else if(type == "Fork")
     {
-        /**/
-    }
-    else if(type == "Straight_Line")
-    {
-        /**/
+        Straight_Line();
+        stopTheCar();
     }
 }
 
-// for Depth_First_Search
 
 
 // for Stack
