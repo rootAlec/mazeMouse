@@ -19,36 +19,49 @@ struct Position
     int x;
     int y;
 };
+int crossMark = 1;
 
 // Make motor run
 void Straight_Line()
 {
     motor1.setSpeed(200);
     motor4.setSpeed(200);
-}
-
-void turn_Left()
-{
-    motor1.setSpeed(200);
-    motor4.setSpeed(400);
+    
+    motor1.run(FORWARD);
+    motor4.run(FORWARD);
 }
 
 void turn_Right()
 {
-    motor1.setSpeed(400);
-    motor4.setSpeed(200);
+    motor1.setSpeed(200);
+    motor4.setSpeed(250);
+
+    motor1.run(FORWARD);
+    motor4.run(FORWARD);
+}
+
+void turn_Left()
+{
+    motor1.setSpeed(100);
+    motor4.setSpeed(50);
+
+    motor1.run(FORWARD);
+    motor4.run(FORWARD);
 }
 
 void reverse()
 {
-    motor1.setSpeed(-200);
-    motor4.setSpeed(-200);
+    motor1.setSpeed(200);
+    motor4.setSpeed(200);
+
+    motor1.run(BACKWARD);
+    motor4.run(BACKWARD);
 }
 
 void stopTheCar()
 {
-    motor1.setSpeed(RELEASE);
-    motor4.setSpeed(RELEASE);
+    motor1.run(RELEASE);
+    motor4.run(RELEASE);
 }
 
 void motorRun(String type)
@@ -216,45 +229,58 @@ String chooseRoute(char l, char m1, char m2, char r)
   String s1 = "Left";
   String s2 = "Right";
   String s3 = "Fork";
-  String s4 = "Straight_Line";
-  String s5 = "EMPTY";
-  if(l == '1' && m1 == '1' && m2 == '1' && r == '0')
+  String s4 = "Cross";
+  String s5 = "Straight_Line";
+  String s6 = "EMPTY";
+  if(l == '0' && m1 == '0' && m2 == '0' && r == '1')
   {
-    return s1; // Left
+        return s1; // Left
   }
-  else if(l == '0' && m1 == '1' && m2 == '1' && r == '1')
+  else if(l == '1' && m1 == '0' && m2 == '0' && r == '0')
   {
         return s2; // Right
   }
-  else if(l == '1' && m1 == '1' && m2 == '1' && r == '1')
-  {
-        return s3; // Fork
-  }
-  else if(l == '0' && m1 == '1' && m2 == '1' && r == '0')
-  {
-        return s4; // Straight_Line
-  }
   else if(l == '0' && m1 == '0' && m2 == '0' && r == '0')
   {
-        return s5; // EMPTY
+        //motor1.setSpeed(RELEASE);
+        //motor4.setSpeed(RELEASE);
+        //motor1.setSpeed(10);
+        //motor4.setSpeed(10);
+        delay(100);
+        if(l == '1' && m1 == '1' && m2 == '1' && r == '1')
+        {
+            return s3; // Fork
+        }
+        else if(l == '1' && m1 == '0' && m2 == '0' && r == '1')
+        {
+            return s4; // Cross
+        }
+  }
+  else if(l == '1' && m1 == '0' && m2 == '0' && r == '1')
+  {
+        return s5; // Straight_Line
+  }
+  else if(l == '1' && m1 == '1' && m2 == '1' && r == '1')
+  {
+        return s5; // empty
   }
 }
 
-
 void loop() {
-  
-  char t = '1'; char f = '0';
-  lineState[0] = digitalRead(trackPin_1000) == 0 ? t : f;
-  lineState[1] = digitalRead(trackPin_0100) == 0 ? t : f;
-  lineState[2] = digitalRead(trackPin_0010) == 0 ? t : f;
-  lineState[3] = digitalRead(trackPin_0001) == 0 ? t : f;
-  //black is 0;
-  //Depth_First_Search();
-  //showPath();
-  String route_type;
-  route_type = chooseRoute(lineState[0], lineState[1], lineState[2], lineState[3]);
-  Serial.println(route_type);
-  motorRun(route_type);
-  delay(100);
-  
+    
+    char t = '1'; char f = '0';
+    lineState[0] = digitalRead(trackPin_1000) == 0 ? t : f;
+    lineState[1] = digitalRead(trackPin_0100) == 0 ? t : f;
+    lineState[2] = digitalRead(trackPin_0010) == 0 ? t : f;
+    lineState[3] = digitalRead(trackPin_0001) == 0 ? t : f;
+    //black is 0;
+    //Depth_First_Search();
+    //showPath();
+    String route_type;
+    route_type = chooseRoute(lineState[0], lineState[1], lineState[2], lineState[3]);
+    Serial.println(route_type);
+    // motorRun(route_type);
+    //delay(100);
+
+    delay(100);
 }
