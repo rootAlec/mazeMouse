@@ -22,13 +22,24 @@ struct Position
 int crossMark = 1;
 
 // Make motor run
-void Straight_Line()
+void Straight_Line(char l, char m1, char m2, char r)
 {
-    motor1.setSpeed(200);
+    double speed = 200*0.85;
+    motor1.setSpeed(speed);
     motor4.setSpeed(200);
     
     motor1.run(FORWARD);
     motor4.run(FORWARD);
+    // while(true)
+    // {
+    //     motor1.run(FORWARD);
+    //     motor4.run(FORWARD);
+    //     if(l=='0' && r =='0')
+    //     {
+    //         if(m1=='1')
+    //     }
+    // }
+
 }
 
 void turn_Right()
@@ -64,11 +75,11 @@ void stopTheCar()
     motor4.run(RELEASE);
 }
 
-void motorRun(String type)
+void motorRun(String type, char l, char m1, char m2, char r)
 {
     if(type == "Straight_Line")
     {
-        Straight_Line();
+        Straight_Line(l, m1, m2, r);
     }
     else if(type == "Left")
     {
@@ -136,13 +147,6 @@ void Depth_First_Search()
     start_Y = Serial.read();
     end_X = Serial.read();
     end_Y = Serial.read();
-    for(int i=0; i<10; i++)
-    {
-        for(int j=0; j<10; j++)
-        {
-            map[i][j] = Serial.read();           
-        }
-    }
     
     // 0-empty 1-wall 2-passed 3-deadend
     nowLocation = {start_X, start_Y};
@@ -268,19 +272,17 @@ String chooseRoute(char l, char m1, char m2, char r)
 
 void loop() {
     
-    char t = '1'; char f = '0';
+    char t = '1'; char f = '0';      //black is 0;
     lineState[0] = digitalRead(trackPin_1000) == 0 ? t : f;
     lineState[1] = digitalRead(trackPin_0100) == 0 ? t : f;
     lineState[2] = digitalRead(trackPin_0010) == 0 ? t : f;
     lineState[3] = digitalRead(trackPin_0001) == 0 ? t : f;
-    //black is 0;
     //Depth_First_Search();
     //showPath();
+
     String route_type;
     route_type = chooseRoute(lineState[0], lineState[1], lineState[2], lineState[3]);
-    Serial.println(route_type);
-    // motorRun(route_type);
-    //delay(100);
+    motorRun(route_type, lineState[0], lineState[1], lineState[2], lineState[3]);
 
     delay(100);
 }
