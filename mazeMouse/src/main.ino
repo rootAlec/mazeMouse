@@ -3,10 +3,10 @@
 #include <AFMotor.h>
 
 // Sensor setup
-const int trackPin_1000 = A5;
-const int trackPin_0100 = A4;
-const int trackPin_0010 = A3;
-const int trackPin_0001 = A2;
+const int trackPin_1000 = A5;                       //     4            1
+const int trackPin_0100 = A4;                       //    _|_          _|_
+const int trackPin_0010 = A3;                       //   |___|        |___|
+const int trackPin_0001 = A2;                       //   |_|_|        |_|_|
 char l, m1, m2, r;
 
 // Motor setup
@@ -36,38 +36,44 @@ void Straight_Line()
         
         if(m1=='0' && m2=='1') // Right
         {
-            
             int i=2;
             while(m1=='0' && m2!='0')
             {
                 getStatus();
-                // motor4.setSpeed(100);
-                // motor1.setSpeed(speed+i);
-                // motor1.run(FORWARD);
-                // motor4.run(FORWARD);
-                // i+=2;
+                motor4.setSpeed(100);
+                motor1.setSpeed(speed+i);
+                motor1.run(FORWARD);
+                motor4.run(FORWARD);
+                i+=3;
 
-                motor4.setSpeed(0);
-                motor1.setSpeed(0);
-                motor1.run(RELEASE);
-                motor4.run(RELEASE);
+                getStatus();
+                if(l=='1' && m1=='1' && m2=='1' && r=='1')
+                {
+                    stopTheCar();
+                }
             }
         }
 
         if(m1=='1' && m2=='0') // Left
         {
+            int i=2;
             while(m1!='0' && m2=='0')
             {
                 getStatus();
-                // motor4.setSpeed(100+2);
-                // motor1.setSpeed(speed);
-                // motor1.run(FORWARD);
-                // motor4.run(FORWARD);
+                motor4.setSpeed(100+i);
+                motor1.setSpeed(speed);
+                motor1.run(FORWARD);
+                motor4.run(FORWARD);
+                i+=2;
 
-                motor4.setSpeed(0);
-                motor1.setSpeed(0);
-                motor1.run(RELEASE);
-                motor4.run(RELEASE);
+                getStatus();
+                if(l=='1' && m1=='1' && m2=='1' && r=='1')
+                {
+                    motor4.setSpeed(0);
+                    motor1.setSpeed(0);
+                    motor1.run(RELEASE);
+                    motor4.run(RELEASE);
+                }
             }
         }
 
@@ -76,26 +82,40 @@ void Straight_Line()
 
 void turn_Right()
 {
-    motor1.setSpeed(200);
-    motor4.setSpeed(250);
+    stopTheCar();
 
-    motor1.run(FORWARD);
-    motor4.run(FORWARD);
+    getStatus(); int i=1;
+    while(l!='1' && m1!='0' && m2!='0' && r!='1')
+    {
+        getStatus();
+        motor1.setSpeed(0);
+        motor4.setSpeed(50+i);
+        motor1.run(FORWARD);
+        motor4.run(FORWARD);
+        i+=2;
+    }
 }
 
 void turn_Left()
 {
-    motor1.setSpeed(100);
-    motor4.setSpeed(50);
+    stopTheCar();
 
-    motor1.run(FORWARD);
-    motor4.run(FORWARD);
+    getStatus(); int i=1;
+    while(l!='1' && m1!='0' && m2!='0' && r!='1')
+    {
+        getStatus();
+        motor1.setSpeed(50+i);
+        motor4.setSpeed(0);
+        motor1.run(FORWARD);
+        motor4.run(FORWARD);
+        i+=2;
+    }
 }
 
 void reverse()
 {
-    motor1.setSpeed(200);
-    motor4.setSpeed(200);
+    motor1.setSpeed(100);
+    motor4.setSpeed(100);
 
     motor1.run(BACKWARD);
     motor4.run(BACKWARD);
@@ -103,6 +123,9 @@ void reverse()
 
 void stopTheCar()
 {
+    motor1.setSpeed(0);
+    motor4.setSpeed(0);
+
     motor1.run(RELEASE);
     motor4.run(RELEASE);
 }
