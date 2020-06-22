@@ -1,26 +1,23 @@
-#include <AFMotor.h>
+#include <SoftwareSerial.h>
 
-AF_DCMotor motor1(1);
-AF_DCMotor motor4(4);
+const int rxpin = A0; // 接收 pin
+const int txpin = A1; // 發送 pin
+SoftwareSerial bluetooth(rxpin, txpin); // 建立虛擬序列埠
 
 void setup() {
-  motor1.setSpeed(200);
-  motor1.run(RELEASE);
-  motor4.setSpeed(200);
-  motor4.run(RELEASE);
-
-  motor1.run(FORWARD);
-  motor4.run(FORWARD);
-  delay(3000);
-    
-  motor1.run(BACKWARD);
-  motor4.run(BACKWARD);
-  delay(3000);
-    
-  motor1.run(RELEASE);
-  motor4.run(RELEASE);
+  Serial.begin(9600);
+  bluetooth.begin(9600); // 初始化藍芽序列埠
 }
 
 void loop() {
-      
+  if (bluetooth.available())
+  {
+    char c = bluetooth.read();
+    Serial.print(c);
+  }
+  if (Serial.available())
+  {
+    char c = Serial.read();
+    bluetooth.print(c);
+  }
 }

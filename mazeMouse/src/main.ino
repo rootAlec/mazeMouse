@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include <AFMotor.h>
+#include <SoftwareSerial.h>
 
 // Sensor setup
 const int trackPin_1000 = A5;                       //     4            1
@@ -8,6 +9,10 @@ const int trackPin_0100 = A4;                       //    _|_          _|_
 const int trackPin_0010 = A3;                       //   |___|        |___|
 const int trackPin_0001 = A2;                       //   |_|_|        |_|_|
 char l, m1, m2, r;
+const int rxpin = 1; // 接收 pin
+const int txpin = 0; // 發送 pin
+SoftwareSerial bluetooth(rxpin, txpin); // 建立虛擬序列埠
+
 
 // Motor setup
 AF_DCMotor motor1(1);
@@ -26,74 +31,87 @@ void Straight_Line()
 {
     while(l=='1' && r=='1')
     {   
+        Serial.println(1);
         getStatus();
-        double speed = 100*0.85;
-        motor4.setSpeed(100);
+
+        if(l!='1' || r!='1')
+        {
+            Serial.println(2);
+            delay(10000);
+            stopTheCar();
+            // String route_type;
+            // route_type = chooseRoute(l, m1, m2, r);
+            // Serial.println(route_type);
+            // motorRun(route_type,l, m1, m2, r);
+            //return;
+        }
+
+        double speed = 80*0.85;
+        motor4.setSpeed(80);
         motor1.setSpeed(speed);
         
         motor1.run(FORWARD);
         motor4.run(FORWARD);
-        
+        Serial.println(3);
         if(m1=='0' && m2=='1') // Right
         {
+            Serial.println(4);
             int i=2;
             while(m1=='0' && m2!='0')
             {
                 getStatus();
-                motor4.setSpeed(100);
+                motor4.setSpeed(80);
                 motor1.setSpeed(speed+i);
                 motor1.run(FORWARD);
                 motor4.run(FORWARD);
                 i+=3;
 
-                getStatus();
-                if(l=='1' && m1=='1' && m2=='1' && r=='1')
-                {
-                    stopTheCar();
-                }
+                // getStatus();
+                // if(l=='1' && m1=='1' && m2=='1' && r=='1')
+                // {
+                //     stopTheCar();
+                // }
             }
         }
 
         if(m1=='1' && m2=='0') // Left
         {
+            Serial.println(5);
             int i=2;
             while(m1!='0' && m2=='0')
             {
                 getStatus();
-                motor4.setSpeed(100+i);
+                motor4.setSpeed(80+i);
                 motor1.setSpeed(speed);
                 motor1.run(FORWARD);
                 motor4.run(FORWARD);
                 i+=2;
 
-                getStatus();
-                if(l=='1' && m1=='1' && m2=='1' && r=='1')
-                {
-                    motor4.setSpeed(0);
-                    motor1.setSpeed(0);
-                    motor1.run(RELEASE);
-                    motor4.run(RELEASE);
-                }
+                // getStatus();
+                // if(l=='1' && m1=='1' && m2=='1' && r=='1')
+                // {
+                //     motor4.setSpeed(0);
+                //     motor1.setSpeed(0);
+                //     motor1.run(RELEASE);
+                //     motor4.run(RELEASE);
+                // }
             }
         }
+
+        
 
     }
 }
 
 void turn_Right()
 {
-    stopTheCar();
+    
+    getStatus();
+    motor1.setSpeed(0);
+    motor4.setSpeed(100);
+    motor1.run(FORWARD);
+    motor4.run(FORWARD);
 
-    getStatus(); int i=1;
-    while(l!='1' && m1!='0' && m2!='0' && r!='1')
-    {
-        getStatus();
-        motor1.setSpeed(0);
-        motor4.setSpeed(50+i);
-        motor1.run(FORWARD);
-        motor4.run(FORWARD);
-        i+=2;
-    }
 }
 
 void turn_Left()
@@ -104,7 +122,7 @@ void turn_Left()
     while(l!='1' && m1!='0' && m2!='0' && r!='1')
     {
         getStatus();
-        motor1.setSpeed(50+i);
+        motor1.setSpeed(80+i);
         motor4.setSpeed(0);
         motor1.run(FORWARD);
         motor4.run(FORWARD);
@@ -279,7 +297,11 @@ void showPath()
 
 // System setup
 void setup() {
-  Serial.begin(9600);
+    
+    Serial.begin(9600);
+    bluetooth.begin(9600); // 初始化藍芽序列埠
+    bluetooth.print("guywguygeu");
+
 }
 
 // Which route
@@ -325,13 +347,20 @@ String chooseRoute(char l, char m1, char m2, char r)
   }
 }
 
-int getStatus()
+void getStatus()
 {
     char t = '1'; char f = '0';      //black is 0;
-    l = digitalRead(trackPin_1000) == 0 ? t : f;
+    l  = digitalRead(trackPin_1000) == 0 ? t : f;
     m1 = digitalRead(trackPin_0100) == 0 ? t : f;
     m2 = digitalRead(trackPin_0010) == 0 ? t : f;
     r = digitalRead(trackPin_0001) == 0 ? t : f;
+    /*bluetooth.print("@");
+    bluetooth.print(l);
+    bluetooth.print(m1);
+    bluetooth.print(m2);
+    bluetooth.print(r);
+    bluetooth.println("#");
+    */
 }
 
 void loop() {
@@ -343,6 +372,7 @@ void loop() {
     String route_type;
     route_type = chooseRoute(l, m1, m2, r);
     Serial.println(route_type);
+    //bluetooth.println(route_type);
     motorRun(route_type,l, m1, m2, r);
 
 }
