@@ -9,10 +9,10 @@ const int trackPin_0100 = A4;                       //    _|_          _|_
 const int trackPin_0010 = A3;                       //   |___|        |___|
 const int trackPin_0001 = A2;                       //   |_|_|        |_|_|
 char l, m1, m2, r;
-const int rxpin = 1; // 接收 pin
-const int txpin = 0; // 發送 pin
+const int rxpin = A0; // 接收 pin
+const int txpin = A1; // 發送 pin
+int x;
 SoftwareSerial bluetooth(rxpin, txpin); // 建立虛擬序列埠
-
 
 // Motor setup
 AF_DCMotor motor1(1);
@@ -31,14 +31,12 @@ void Straight_Line()
 {
     while(l=='1' && r=='1')
     {   
-        Serial.println(1);
         getStatus();
 
         if(l!='1' || r!='1')
         {
-            Serial.println(2);
-            delay(10000);
-            stopTheCar();
+            reverse();
+            return;
             // String route_type;
             // route_type = chooseRoute(l, m1, m2, r);
             // Serial.println(route_type);
@@ -52,10 +50,8 @@ void Straight_Line()
         
         motor1.run(FORWARD);
         motor4.run(FORWARD);
-        Serial.println(3);
         if(m1=='0' && m2=='1') // Right
         {
-            Serial.println(4);
             int i=2;
             while(m1=='0' && m2!='0')
             {
@@ -76,7 +72,6 @@ void Straight_Line()
 
         if(m1=='1' && m2=='0') // Left
         {
-            Serial.println(5);
             int i=2;
             while(m1!='0' && m2=='0')
             {
@@ -105,38 +100,58 @@ void Straight_Line()
 
 void turn_Right()
 {
-    
-    getStatus();
+
     motor1.setSpeed(0);
-    motor4.setSpeed(100);
+    motor4.setSpeed(120);
     motor1.run(FORWARD);
     motor4.run(FORWARD);
 
+    delay(570);
+
+    motor1.setSpeed(0);
+    motor4.run(BACKWARD);
+
+    delay(50);
+    
+    motor1.run(RELEASE);
+    motor4.run(RELEASE);
+
+    delay(1000);
 }
 
 void turn_Left()
 {
     stopTheCar();
+    motor1.setSpeed(120);
+    motor4.setSpeed(0);
+    motor1.run(FORWARD);
+    motor4.run(FORWARD);
 
-    getStatus(); int i=1;
-    while(l!='1' && m1!='0' && m2!='0' && r!='1')
-    {
-        getStatus();
-        motor1.setSpeed(80+i);
-        motor4.setSpeed(0);
-        motor1.run(FORWARD);
-        motor4.run(FORWARD);
-        i+=2;
-    }
+    delay(460);
+
+    motor4.setSpeed(0);
+    motor1.run(BACKWARD);
+
+    delay(50);
+    
+    motor1.run(RELEASE);
+    motor4.run(RELEASE);
+
+    delay(1000);
 }
 
 void reverse()
 {
-    motor1.setSpeed(100);
-    motor4.setSpeed(100);
+    motor1.setSpeed(150);
+    motor4.setSpeed(150);
 
     motor1.run(BACKWARD);
     motor4.run(BACKWARD);
+    delay(10);
+
+    motor1.run(RELEASE);
+    motor4.run(RELEASE);
+    delay(100);
 }
 
 void stopTheCar()
@@ -299,8 +314,8 @@ void showPath()
 void setup() {
     
     Serial.begin(9600);
-    bluetooth.begin(9600); // 初始化藍芽序列埠
-    bluetooth.print("guywguygeu");
+    Serial.begin(38400);
+    //bluetooth.begin(9600); // 初始化藍芽序列埠
 
 }
 
@@ -313,11 +328,11 @@ String chooseRoute(char l, char m1, char m2, char r)
   String s4 = "Cross";
   String s5 = "Straight_Line";
   String s6 = "EMPTY";
-  if(l == '0' && m1 == '0' && m2 == '0' && r == '1')
+  if((l == '0' && m1 == '0' && m2 == '0' && r == '1') || (l == '0' && m1 == '1' && m2 == '1' && r == '1'))
   {
         return s1; // Left
   }
-  else if(l == '1' && m1 == '0' && m2 == '0' && r == '0')
+  else if((l == '1' && m1 == '0' && m2 == '0' && r == '0') || (l == '1' && m1 == '1' && m2 == '1' && r == '0'))
   {
         return s2; // Right
   }
